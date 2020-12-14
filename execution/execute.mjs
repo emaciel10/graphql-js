@@ -282,10 +282,10 @@ function executeFields(exeContext, parentType, sourceValue, path, fields) {
     // This allows for more application specific resolve logic such as caching by specific
     // document types and execution context values
 
-    var customResolveField = exeContext.contextValue.customResolveField;
+    var _contextValue = exeContext && exeContext.contextValue;
 
-    if (typeof customResolveField === 'function') {
-      result = customResolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+    if (typeof (_contextValue === null || _contextValue === void 0 ? void 0 : _contextValue.customResolveField) === 'function') {
+      result = _contextValue.customResolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
     } // otherwise fall back on resolveField
     else {
         result = resolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
@@ -459,8 +459,8 @@ export function resolveField(exeContext, parentType, source, fieldNodes, path) {
     // is provided to every resolve function within an execution. It is commonly
     // used to represent an authenticated user, or request-specific caches.
 
-    var _contextValue = exeContext.contextValue;
-    var result = resolveFn(source, args, _contextValue, info);
+    var _contextValue2 = exeContext.contextValue;
+    var result = resolveFn(source, args, _contextValue2, info);
     var completed;
 
     if (isPromise(result)) {
