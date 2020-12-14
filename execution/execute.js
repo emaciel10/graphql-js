@@ -8,6 +8,7 @@ exports.executeSync = executeSync;
 exports.assertValidExecutionArguments = assertValidExecutionArguments;
 exports.buildExecutionContext = buildExecutionContext;
 exports.collectFields = collectFields;
+exports.resolveField = resolveField;
 exports.buildResolveInfo = buildResolveInfo;
 exports.getFieldDef = getFieldDef;
 exports.defaultFieldResolver = exports.defaultTypeResolver = void 0;
@@ -291,7 +292,18 @@ function executeFields(exeContext, parentType, sourceValue, path, fields) {
     var responseName = _Object$keys2[_i4];
     var fieldNodes = fields[responseName];
     var fieldPath = (0, _Path.addPath)(path, responseName, parentType.name);
-    var result = resolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+    var result = void 0; // If a custom resolve field function is provided by the execution context, use it
+    // This allows for more application specific resolve logic such as caching by specific
+    // document types and execution context values
+
+    var customResolveField = exeContext.contextValue.customResolveField;
+
+    if (typeof customResolveField === 'function') {
+      result = customResolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+    } // otherwise fall back on resolveField
+    else {
+        result = resolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+      }
 
     if (result !== undefined) {
       results[responseName] = result;

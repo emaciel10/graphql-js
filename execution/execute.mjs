@@ -278,7 +278,18 @@ function executeFields(exeContext, parentType, sourceValue, path, fields) {
     var responseName = _Object$keys2[_i4];
     var fieldNodes = fields[responseName];
     var fieldPath = addPath(path, responseName, parentType.name);
-    var result = resolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+    var result = void 0; // If a custom resolve field function is provided by the execution context, use it
+    // This allows for more application specific resolve logic such as caching by specific
+    // document types and execution context values
+
+    var customResolveField = exeContext.contextValue.customResolveField;
+
+    if (typeof customResolveField === 'function') {
+      result = customResolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+    } // otherwise fall back on resolveField
+    else {
+        result = resolveField(exeContext, parentType, sourceValue, fieldNodes, fieldPath);
+      }
 
     if (result !== undefined) {
       results[responseName] = result;
@@ -425,7 +436,7 @@ function getFieldEntryKey(node) {
  */
 
 
-function resolveField(exeContext, parentType, source, fieldNodes, path) {
+export function resolveField(exeContext, parentType, source, fieldNodes, path) {
   var _fieldDef$resolve;
 
   var fieldNode = fieldNodes[0];
@@ -478,7 +489,6 @@ function resolveField(exeContext, parentType, source, fieldNodes, path) {
 /**
  * @internal
  */
-
 
 export function buildResolveInfo(exeContext, fieldDef, fieldNodes, parentType, path) {
   // The resolve function's optional fourth argument is a collection of
